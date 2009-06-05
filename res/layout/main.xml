@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/widget29"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical">
+	<LinearLayout android:id="@+id/promptLayout"
+		android:layout_width="fill_parent" android:layout_height="50px"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:background="@+drawable/shape_5" android:orientation="vertical">
+		<TextView android:id="@+id/promptTextView"
+			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:text="Google full-text translator front-end">
+		</TextView>
+	</LinearLayout>
+	<LinearLayout android:id="@+id/widget74"
+		android:layout_width="fill_parent" android:layout_height="40px"
+		xmlns:android="http://schemas.android.com/apk/res/android">
+		<Spinner android:id="@+id/usedTranslatorSpinner"
+			android:layout_width="130px" android:layout_height="fill_parent">
+		</Spinner>
+		<TextView android:id="@+id/widget76" android:layout_width="10px"
+			android:layout_height="fill_parent" android:text=":">
+		</TextView>
+		<Spinner android:id="@+id/fromSpinner" android:layout_width="80px"
+			android:layout_height="fill_parent">
+		</Spinner>
+		<TextView android:id="@+id/widget78" android:layout_width="wrap_content"
+			android:layout_height="fill_parent" android:text="To">
+		</TextView>
+		<Spinner android:id="@+id/toSpinner" android:layout_width="80px"
+			android:layout_height="fill_parent">
+		</Spinner>
+	</LinearLayout>
+	<LinearLayout android:id="@+id/widget88"
+		android:layout_width="fill_parent" android:layout_height="150px"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical">
+		<!--
+			ScrollView android:id="@+id/scrollView"
+			android:layout_width="fill_parent" android:layout_height="150px"
+		-->
+		<EditText android:id="@+id/toTranslateEditText"
+			android:layout_width="fill_parent" android:layout_height="150px"
+			android:text="" android:textSize="18sp">
+		</EditText>
+		<!-- /ScrollView-->
+	</LinearLayout>
+	<LinearLayout android:id="@+id/widget90"
+		android:layout_width="fill_parent" android:layout_height="47px"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:background="@+drawable/shape_5" android:orientation="horizontal">
+		<Button android:id="@+id/translateButton" android:layout_width="wrap_content"
+			android:layout_height="fill_parent" android:text="Translate">
+		</Button>
+		<Button android:id="@+id/clearButton" android:layout_width="wrap_content"
+			android:layout_height="fill_parent" android:text="Clear">
+		</Button>
+		<Button android:id="@+id/readDatabaseButton" android:layout_width="wrap_content"
+			android:layout_height="fill_parent" android:text="Database">
+		</Button>
+			<Button android:id="@+id/readFileButton" android:layout_width="wrap_content"
+			android:layout_height="fill_parent" android:text="ReadFile">
+			</Button>
+	</LinearLayout>
+	<LinearLayout android:id="@+id/widget92"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:background="@+drawable/shape_4" xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical">
+		<ScrollView android:id="@+id/scrollView"
+			android:layout_width="fill_parent" android:layout_height="fill_parent">
+			<TextView android:id="@+id/translatedTextView"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+
+				android:text="">
+			</TextView>
+		</ScrollView>
+	</LinearLayout>
+</LinearLayout>
