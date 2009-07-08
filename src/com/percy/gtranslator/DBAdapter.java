@@ -28,11 +28,10 @@ public class DBAdapter
 														+ " text not null, "
 														+ TRANSLATEDTEXT
 														+ " text not null);";
-	
-    private static final String DATABASE_CREATE =
-        "create table titles (_id integer primary key autoincrement, "
-        + "isbn text not null, title text not null, "
-        + "publisher text not null);";
+
+	private static final String	DATABASE_CREATE	= "create table titles (_id integer primary key autoincrement, "
+														+ "isbn text not null, title text not null, "
+														+ "publisher text not null);";
 
 	private DatabaseHelper		DBHelper;
 	private SQLiteDatabase		db;

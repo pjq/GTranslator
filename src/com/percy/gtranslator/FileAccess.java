@@ -74,11 +74,10 @@ public class FileAccess
 		{
 			FileOutputStream fos = context.openFileOutput(fileName,
 					context.MODE_APPEND);
-			//OutputStreamWriter dos = new OutputStreamWriter(fos);
+			// OutputStreamWriter dos = new OutputStreamWriter(fos);
 			// dos.writeChars(toWriteString);
 			DataOutputStream dos = new DataOutputStream(fos);
-			dos.writeUTF(toWriteString+'\n');
-			
+			dos.writeUTF(toWriteString + '\n');
 
 			dos.flush();
 			fos.flush();

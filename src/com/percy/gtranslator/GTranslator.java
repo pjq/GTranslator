@@ -14,10 +14,13 @@ import org.apache.http.impl.cookie.DateParseException;
 
 import android.R.integer;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewManager;
@@ -40,16 +43,19 @@ public class GTranslator extends Activity implements OnClickListener
 
 	private TextView				promptTextView;
 	private Spinner					usedTranslatorSpinner;
-	private Spinner					fromSpinner;
-	private Spinner					toSpinner;
+	private static Spinner			fromSpinner;
+	private static Spinner			toSpinner;
 	private Button					translateButton;
 	private Button					clearButton;
 	private Button					readDatabaseButton;
 	private Button					readFileButton;
-	private TextView				translatedTextView;
-	private EditText				toTranslateEditText;
+	private static TextView			translatedTextView;
+	private static EditText			toTranslateEditText;
 
-	private DBAdapter				dbAdapter;
+	private static DBAdapter		dbAdapter;
+
+	public static Context			context;
+	public static ProgressDialog	progressDialog;
 
 	private static final String[]	mCountries		=
 													{ "en", "zh-CN", "it",
@@ -65,8 +71,8 @@ public class GTranslator extends Activity implements OnClickListener
 	private ArrayAdapter<String>	translateWebAdapter;
 	private List<String>			allTranslateWeb;
 
-	private String					fromString;
-	private String					toString;
+	private static String			fromString;
+	private static String			toString;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -77,6 +83,7 @@ public class GTranslator extends Activity implements OnClickListener
 
 		this.dbAdapter = new DBAdapter(this);
 		this.dbAdapter.open();
+		GTranslator.context = this;
 
 		promptTextView = (TextView) findViewById(R.id.promptTextView);
 		usedTranslatorSpinner = (Spinner) findViewById(R.id.usedTranslatorSpinner);
@@ -134,39 +141,33 @@ public class GTranslator extends Activity implements OnClickListener
 		int id = v.getId();
 		if (id == R.id.translateButton)
 		{
-			translatedTextView.setText("Connecting...");
-			String toTranslateTextString = toTranslateEditText.getText()
-					.toString();
-			String tempString = toTranslateTextString.replace(" ", "%20");
-			fromString = mCountries[fromSpinner.getSelectedItemPosition()];
-			toString = mCountries[toSpinner.getSelectedItemPosition()];
-			String queryString = tempString + "&langpair=" + fromString + "%7C"
-					+ toString;
+			ProcessDialogThread dialogThread = new ProcessDialogThread();
+			dialogThread.execute(null);
+			/*
+			 * translatedTextView.setText("Connecting..."); String
+			 * toTranslateTextString = toTranslateEditText.getText()
+			 * .toString(); String tempString =
+			 * toTranslateTextString.replace(" ", "%20"); fromString =
+			 * mCountries[fromSpinner.getSelectedItemPosition()]; toString =
+			 * mCountries[toSpinner.getSelectedItemPosition()]; String
+			 * queryString = tempString + "&langpair=" + fromString + "%7C" +
+			 * toString;
+			 */
 			// String queryString = tempString + "&langpair=en%7Czh-CN";
 			// textViewTranslate.setText("queryString:"+toTranslateTextString+":"+'\n');
-
-			String rawData = getRawData(queryString);
-			if (null != rawData)
-			{
-				String parsedDataString = getData(rawData);
-				if (null == parsedDataString||""==parsedDataString)
-				{
-					translatedTextView.setText("Not found");
-				} else
-				{
-					translatedTextView.setText(parsedDataString);
-					dbAdapter.insertItem(toTranslateTextString, parsedDataString);
-
-					FileAccess.writeFile(this, toTranslateTextString + ":"
-							+ parsedDataString);
-				}
-
-			
-
-			} else
-			{
-				translatedTextView.setText("Translate failed!");
-			}
+			/*
+			 * String rawData = getRawData(queryString); if (null != rawData) {
+			 * String parsedDataString = getData(rawData); if (null ==
+			 * parsedDataString || "" == parsedDataString) {
+			 * translatedTextView.setText("Not found"); } else {
+			 * translatedTextView.setText(parsedDataString);
+			 * dbAdapter.insertItem(toTranslateTextString, parsedDataString);
+			 * 
+			 * FileAccess.writeFile(this, toTranslateTextString + ":" +
+			 * parsedDataString); }
+			 * 
+			 * } else { translatedTextView.setText("Translate failed!"); }
+			 */
 		} else if (id == R.id.clearButton)
 		{
 			toTranslateEditText.setText("");
@@ -179,14 +180,15 @@ public class GTranslator extends Activity implements OnClickListener
 			{
 				do
 				{
-					int index = mCursor.getColumnIndex(DBAdapter.TOTRANSLATETEXT);
+					int index = mCursor
+							.getColumnIndex(DBAdapter.TOTRANSLATETEXT);
 					String fromTextString = mCursor.getString(index);
 					index = mCursor.getColumnIndex(DBAdapter.TRANSLATEDTEXT);
 					String toTextString = mCursor.getString(index);
 					translatedTextView
 							.append("**********************************" + '\n');
-					translatedTextView.append(fromTextString + ":" + toTextString
-							+ '\n');
+					translatedTextView.append(fromTextString + ":"
+							+ toTextString + '\n');
 
 				} while (mCursor.moveToNext());
 				translatedTextView
@@ -196,8 +198,7 @@ public class GTranslator extends Activity implements OnClickListener
 		} else if (id == R.id.readFileButton)
 		{
 
-			translatedTextView
-					.setText("Search history(Read File):" + '\n');
+			translatedTextView.setText("Search history(Read File):" + '\n');
 			String readTextString = FileAccess.readFile(this, "test.txt");
 			translatedTextView.append("" + readTextString);
 
@@ -313,6 +314,79 @@ public class GTranslator extends Activity implements OnClickListener
 				.append("#################Read File###################" + '\n');
 		String readTextString = FileAccess.readFile(this, "test.txt");
 		translatedTextView.append("" + readTextString);
+
+	}
+
+	private static class ProcessDialogThread extends
+			AsyncTask<String, Void, String>
+	{
+
+		@Override
+		protected String doInBackground(String... params)
+		{
+			// TODO Auto-generated method stub
+			String toTranslateTextString = toTranslateEditText.getText()
+					.toString();
+			String tempString = toTranslateTextString.replace(" ", "%20");
+			fromString = mCountries[fromSpinner.getSelectedItemPosition()];
+			toString = mCountries[toSpinner.getSelectedItemPosition()];
+			String queryString = tempString + "&langpair=" + fromString + "%7C"
+					+ toString;
+			// String queryString = tempString + "&langpair=en%7Czh-CN";
+			// textViewTranslate.setText("queryString:"+toTranslateTextString+":"+'\n');
+
+			return getRawData(queryString);
+
+		}
+
+		protected void onPreExecute()
+		{
+			showDialog();
+			translatedTextView.setText("Connecting...");
+
+		}
+
+		protected void onPostExecute(String rawData)
+		{
+			dismissDialog();
+			String toTranslateTextString = toTranslateEditText.getText()
+					.toString();
+			if (null != rawData)
+			{
+				String parsedDataString = getData(rawData);
+				if (null == parsedDataString || "" == parsedDataString)
+				{
+					translatedTextView.setText("Not found");
+				} else
+				{
+					translatedTextView.setText(parsedDataString);
+					dbAdapter.insertItem(toTranslateTextString,
+							parsedDataString);
+
+					FileAccess.writeFile(GTranslator.context,
+							toTranslateTextString + ":" + parsedDataString);
+				}
+
+			} else
+			{
+				translatedTextView.setText("Translate failed!");
+			}
+
+		}
+
+		public void showDialog()
+		{
+			progressDialog = new ProgressDialog(GTranslator.context);
+			progressDialog.setTitle("Searching");
+			progressDialog.setMessage("Please waiting...");
+			progressDialog.show();
+
+		}
+
+		public void dismissDialog()
+		{
+			progressDialog.dismiss();
+		}
 
 	}
 
