@@ -40,7 +40,6 @@ public class GTranslator extends Activity implements OnClickListener
 	private TextView				textViewTranslate;
 	private Button					buttonTranslate;
 	private EditText				editTextTranslate;
-
 	private TextView				promptTextView;
 	private Spinner					usedTranslatorSpinner;
 	private static Spinner			fromSpinner;
@@ -54,6 +53,10 @@ public class GTranslator extends Activity implements OnClickListener
 
 	private static DBAdapter		dbAdapter;
 
+	/**
+	 * 
+	 *The GTranslator class Instance
+	 */
 	public static Context			context;
 	public static ProgressDialog	progressDialog;
 
@@ -65,9 +68,7 @@ public class GTranslator extends Activity implements OnClickListener
 													{ "google", "yahoo",
 			"baidu"								};
 	private List<String>			allcountries;
-
 	private ArrayAdapter<String>	fromSpinnerAdapter;
-
 	private ArrayAdapter<String>	translateWebAdapter;
 	private List<String>			allTranslateWeb;
 
@@ -317,6 +318,11 @@ public class GTranslator extends Activity implements OnClickListener
 
 	}
 
+	/**
+	 *This class is used to get Show a progress Dialog when getting the data
+	 * from network.
+	 * 
+	 */
 	private static class ProcessDialogThread extends
 			AsyncTask<String, Void, String>
 	{
@@ -339,6 +345,7 @@ public class GTranslator extends Activity implements OnClickListener
 
 		}
 
+		@Override
 		protected void onPreExecute()
 		{
 			showDialog();
@@ -346,6 +353,10 @@ public class GTranslator extends Activity implements OnClickListener
 
 		}
 
+		/*
+		 * The rawData is from doInBackground();
+		 */
+		@Override
 		protected void onPostExecute(String rawData)
 		{
 			dismissDialog();
